@@ -82,23 +82,101 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
 
 Endpoints
-GET '/api/v1.0/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/categories'
+GET '/questions'
+GET '/categories/<int:category_id>/questions'
+POST '/questions'
+POST '/quizzes'
+DELETE '/questions'
 
-GET '/api/v1.0/categories'
+GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Returns: An object with a success key and categories key, that contains a object of id: category_string key:value pairs. 
+{
+'success': True,
+'categories':{'1' : "Science",
+              '2' : "Art",
+              '3' : "Geography",
+              '4' : "History",
+              '5' : "Entertainment",
+              '6' : "Sports"}
+}
 
-```
+
+GET '/questions'
+- Fetches a dictionary of questions in which the keys are the question id, question, answer, category and difficulty
+- Request Arguments: None
+- Returns: an object with a success key, questions, total_questions, categories, current_category
+{
+    'success':True,
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer', 
+            'difficulty': 5,
+            'category': 2
+        },
+    ],
+    'totalQuestions': 100,
+    'categories': { '1' : "Science",
+    '2' : "Art",
+    '3' : "Geography",
+    '4' : "History",
+    '5' : "Entertainment",
+    '6' : "Sports" },
+    'currentCategory': 'History'
+}
+
+GET '/categories/<int:category_id>/questions'
+-Fetches a dictionary of questions based on a specific category in which the keys are the question id, question, answer, category and difficulty
+-Request Arguments: None
+-Returns: an object with a success key, questions, total_questions, current_category
+{
+    'success': True,
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer', 
+            'difficulty': 5,
+            'category': 4
+        },
+    ],
+    'totalQuestions': 100,
+    'currentCategory': 'History'
+}
+
+POST '/questions'
+-Fetches: None
+-Request Arguments: either and object with searchTerm to search or a question, answer, category, difficulty object to post a new question
+-Returns: any array of questions, a number of totalQuestions that met the search term and the current category string incase of a search or a success key incase of posting a new question
+
+DELETE '/questions'
+- Fetches: None
+- Request Arguments: id - integer
+- Returns: return an object with a success key which equals True and deleted key which has the deleted question id
+{
+    'success': True,
+    'deleted': id
+}
+
+POST '/quizzes'
+- Feteches: a new question object from the current category
+- Request Arguments: {'previous_questions':  an array of question id's such as [1, 4, 20, 15]
+'quiz_category': a string of the current category }
+- Returns: a single new question object with a success key or only a success key incase all questions were consumed
+{
+    'success': True,
+    'question': {
+        'id': 1,
+        'question': 'This is a question',
+        'answer': 'This is an answer', 
+        'difficulty': 5,
+        'category': 4
+    }
+}
 
 
 ## Testing
