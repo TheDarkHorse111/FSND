@@ -82,7 +82,6 @@ def create_app(test_config=None):
     cates = {}
     current_questions = paginate_questions(request,selection)
     for cate in categories:
-      temp = cate.format()
       cates.update({cate.id:cate.type})
     if len(current_questions) == 0:
       abort(404)
@@ -236,21 +235,23 @@ def create_app(test_config=None):
     def get_rand_question(questions):
       return questions[random.randint(0,len(questions)-1)]
     question = get_rand_question(questions_list)
-
-    #if question was picked then get another question that wasn't picked
-    while question["id"] in previous_questions:
-      question = get_rand_question(questions_list)
-    
     #send only a success message if all questions were consumed otherwise send a new question
     if len(previous_questions) >= len(questions):
       return jsonify({
         "success":True
       }) 
-    else:
-      return jsonify({
-        "success": True,
-        "question" : question
-      })
+    
+    #if question was picked then get another question that wasn't picked
+    while question["id"] in previous_questions:
+      question = get_rand_question(questions_list)
+    
+    
+    
+    
+    return jsonify({
+      "success": True,
+      "question" : question
+    })
     
 
 

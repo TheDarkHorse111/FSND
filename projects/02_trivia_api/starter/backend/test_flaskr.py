@@ -14,8 +14,12 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
+        DB_HOST = os.getenv('DB_HOST', '127.0.0.1:5432')
+        DB_USER = os.getenv('DB_USER', 'caryn')
+        DB_PASSWORD = os.getenv('DB_PASSWORD', 'caryn')
+        DB_NAME = os.getenv('DB_NAME', 'trivia_test')
         self.database_name = "trivia_test"
-        self.database_path = "postgresql://caryn:caryn@{}/{}".format('localhost:5432', self.database_name)
+        self.database_path = "postgresql://{}:{}@{}/{}".format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
         setup_db(self.app, self.database_path)
         self.new_question = {'question': "what is our name", 'answer': "my name is jeff", 'category': "1",
         'difficulty': 1}
@@ -113,6 +117,33 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], True)
         for question in data["questions"]:
             self.assertEqual(int(question["category"]),category.id)
+    
+    def test_if_category_not_found(self):
+        res = self.client().get('/categories/1000/questions')
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code,404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "resource not found")
+
+    def test_if_quiz_returns_question(self):
+        res = self.client().post('/quizzes', json={"previous_questions":[5,9,12], "quiz_category":{"id":4, "type":"History"}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["question"]["id"], 23)
+    
+
+    def test_400_if_quiz_has_bad_request(self):
+        res = self.client().post('/quizzes', json={"previous_questions":None, "quiz_category":{"id":4, "type":"History"}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,400)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "bad request" )
+
+    
     
     
 
